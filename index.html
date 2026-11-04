@@ -37,7 +37,6 @@
             padding: 10px;
         }
 
-        /* App Layout Container */
         .app-container {
             width: 100%;
             max-width: 430px;
@@ -53,7 +52,6 @@
             border: 4px solid #1e293b;
         }
 
-        /* Top Header Navigation */
         .top-bar {
             background: var(--bubilet-green);
             color: white;
@@ -81,7 +79,6 @@
             letter-spacing: -0.5px;
         }
 
-        /* Speed Test Live Dashboard Header */
         .practice-dashboard {
             background: #1e293b;
             color: white;
@@ -114,7 +111,6 @@
             50% { opacity: 0.5; }
         }
 
-        /* Main Content View Container */
         .content-area {
             flex: 1;
             overflow-y: auto;
@@ -123,7 +119,6 @@
             flex-direction: column;
         }
 
-        /* STEP 1: Event Detail View */
         .event-detail-view {
             display: flex;
             flex-direction: column;
@@ -133,7 +128,7 @@
 
         .event-banner {
             width: 100%;
-            height: 230px;
+            height: 240px;
             position: relative;
             background: #000;
             overflow: hidden;
@@ -219,7 +214,6 @@
             line-height: 1.5;
         }
 
-        /* STEP 2: Interactive Arena & Block Selection */
         .arena-view {
             padding: 12px;
             display: flex;
@@ -287,7 +281,6 @@
             margin-bottom: 10px;
         }
 
-        /* Layout Grid for Blocks matching Bubilet Arena Image */
         .arena-grid {
             width: 100%;
             display: grid;
@@ -386,7 +379,6 @@
             border-radius: 50%;
         }
 
-        /* Modal for Seat selection inside block */
         .seat-picker-overlay {
             position: absolute;
             inset: 0;
@@ -454,7 +446,6 @@
             border-color: var(--bubilet-green);
         }
 
-        /* STEP 3: Mobile Payment Form matching 3rd screenshot */
         .checkout-view {
             padding: 16px;
             display: flex;
@@ -536,19 +527,6 @@
             border-color: var(--bubilet-green);
         }
 
-        .card-brands {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            gap: 4px;
-        }
-
-        .card-brands img {
-            height: 16px;
-        }
-
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -612,7 +590,6 @@
             margin-top: 8px;
         }
 
-        /* Bottom Fixed Navigation Bar */
         .bottom-nav {
             background: white;
             border-top: 1px solid #e2e8f0;
@@ -641,7 +618,6 @@
             font-size: 18px;
         }
 
-        /* Score & Performance Modal */
         .result-overlay {
             position: absolute;
             inset: 0;
@@ -708,7 +684,6 @@
 <body>
 
     <div class="app-container">
-        <!-- Top App Bar -->
         <div class="top-bar">
             <div class="nav-left">
                 <i class="fa-solid fa-chevron-left" id="btnBack"></i>
@@ -721,7 +696,6 @@
             </div>
         </div>
 
-        <!-- Practice Mode Timer & Live Alert Header -->
         <div class="practice-dashboard">
             <div>
                 <span style="opacity: 0.7; font-size: 11px;">PROVA SÜRESİ</span>
@@ -733,13 +707,13 @@
             </div>
         </div>
 
-        <!-- Main Dynamic View Area -->
         <div class="content-area">
             
             <!-- STEP 1: EVENT DETAIL PAGE (PERMA) -->
             <div id="stepEvent" class="event-detail-view">
                 <div class="event-banner">
-                    <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80" alt="PERMA Konseri Afişi">
+                    <!-- GİTHUB'A YÜKLEDİĞİNİZ GÖRSEL EKLENDİ -->
+                    <img src="./perma-20261102170245898-20885461117a.avif" alt="PERMA Konseri Afişi">
                 </div>
                 <div class="event-info-card">
                     <h1 class="event-title">PERMA</h1>
@@ -783,12 +757,10 @@
                     900₺ - 3000₺
                 </div>
 
-                <!-- Arena Map matching screenshot 2 -->
                 <div class="arena-map-wrapper">
                     <div class="stage-line">SAHNE</div>
                     
                     <div class="arena-grid">
-                        <!-- Left Side Tribunes -->
                         <div class="side-tribunes">
                             <button class="block-btn available" data-block="201">201 <span class="stock-count">Az Kaldı</span></button>
                             <button class="block-btn available" data-block="202">202 <span class="stock-count">Müsait</span></button>
@@ -798,7 +770,6 @@
                             <button class="block-btn available" data-block="206">206 <span class="stock-count">Müsait</span></button>
                         </div>
 
-                        <!-- Center Field (Standing Areas) -->
                         <div class="center-field">
                             <button class="block-btn available" data-block="SAHNE ÖNÜ AYAKTA" style="height: 70px;">
                                 SAHNE ÖNÜ AYAKTA
@@ -810,7 +781,6 @@
                             </button>
                         </div>
 
-                        <!-- Right Side Tribunes -->
                         <div class="side-tribunes">
                             <button class="block-btn available" data-block="217">217 <span class="stock-count">Az Kaldı</span></button>
                             <button class="block-btn available" data-block="216">216 <span class="stock-count">Müsait</span></button>
@@ -820,7 +790,6 @@
                             <button class="block-btn available" data-block="212">212 <span class="stock-count">Müsait</span></button>
                         </div>
 
-                        <!-- Bottom Curve Tribunes -->
                         <div class="bottom-tribunes">
                             <button class="block-btn available" data-block="207">207</button>
                             <button class="block-btn available" data-block="208">208</button>
@@ -837,7 +806,7 @@
                 </div>
             </div>
 
-            <!-- STEP 3: CHECKOUT & PAYMENT FORM VIEW -->
+            <!-- STEP 3: CHECKOUT VIEW -->
             <div id="stepCheckout" class="checkout-view hidden">
                 <div class="checkout-header">
                     <h3>Sipariş Özeti</h3>
@@ -853,7 +822,7 @@
                 </div>
 
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h4 font-size: 14px;>Ödeme Bilgileri</h4>
+                    <h4 style="font-size: 14px;">Ödeme Bilgileri</h4>
                     <button class="quick-fill-btn" id="btnQuickFill">⚡ Prova Hızlı Doldur</button>
                 </div>
 
@@ -920,7 +889,6 @@
 
         </div>
 
-        <!-- Seat Selection Bottom Sheet Modal -->
         <div class="seat-picker-overlay" id="seatModal">
             <div class="seat-sheet">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -932,7 +900,6 @@
             </div>
         </div>
 
-        <!-- Score & Performance Result View -->
         <div class="result-overlay" id="resultOverlay">
             <div class="score-card">
                 <i class="fa-solid fa-trophy" style="font-size: 40px; color: #f59e0b;"></i>
@@ -950,7 +917,6 @@
             </div>
         </div>
 
-        <!-- Bottom Navigation Bar matching screenshot -->
         <div class="bottom-nav">
             <div class="nav-item active">
                 <i class="fa-solid fa-house"></i>
@@ -972,7 +938,6 @@
     </div>
 
     <script>
-        // App State Variables
         let currentStep = 'event';
         let timerInterval = null;
         let liveSoldOutInterval = null;
@@ -981,7 +946,6 @@
         let selectedBlock = '';
         let selectedSeat = '';
 
-        // DOM Elements
         const stepEvent = document.getElementById('stepEvent');
         const stepArena = document.getElementById('stepArena');
         const stepCheckout = document.getElementById('stepCheckout');
@@ -991,7 +955,6 @@
         const modalBlockTitle = document.getElementById('modalBlockTitle');
         const resultOverlay = document.getElementById('resultOverlay');
 
-        // Start Stopwatch
         function startTimer() {
             startTime = Date.now() - elapsedTime;
             timerInterval = setInterval(() => {
@@ -1013,7 +976,6 @@
             timerDisplay.textContent = "00:00.000";
         }
 
-        // Simulating Real-time High-Demand Ticket Consumption (Live Sold-out Bot)
         function startLiveTicketDepletion() {
             const blocks = document.querySelectorAll('.block-btn.available');
             liveSoldOutInterval = setInterval(() => {
@@ -1036,10 +998,9 @@
                         if (stockSpan) stockSpan.textContent = "Tükendi";
                     }, 2000);
                 }
-            }, 1200); // Blocks get snatched every 1.2s
+            }, 1200);
         }
 
-        // Navigation Management
         document.getElementById('btnStartPractice').addEventListener('click', () => {
             stepEvent.classList.add('hidden');
             stepArena.classList.remove('hidden');
@@ -1048,7 +1009,6 @@
             startLiveTicketDepletion();
         });
 
-        // Block Selection Click Handler
         document.querySelectorAll('.block-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const blockName = btn.dataset.block;
@@ -1065,11 +1025,10 @@
             });
         });
 
-        // Generate Seats Inside Modal
         function generateSeats() {
             seatsGrid.innerHTML = '';
             for (let i = 1; i <= 15; i++) {
-                const isTaken = Math.random() < 0.3; // 30% random taken
+                const isTaken = Math.random() < 0.3;
                 const seatBtn = document.createElement('button');
                 seatBtn.className = `single-seat-btn ${isTaken ? 'taken' : ''}`;
                 seatBtn.textContent = `K-` + i;
@@ -1093,7 +1052,6 @@
             seatModal.classList.remove('active');
         });
 
-        // Transition to Payment Checkout
         function goToCheckout() {
             clearInterval(liveSoldOutInterval);
             stepArena.classList.add('hidden');
@@ -1105,9 +1063,8 @@
             startReservationCountdown();
         }
 
-        // Reservation 10 Minute Countdown Timer Simulation
         function startReservationCountdown() {
-            let resTime = 594; // 9 min 54 sec like screenshot
+            let resTime = 594;
             setInterval(() => {
                 const m = String(Math.floor(resTime / 60)).padStart(2, '0');
                 const s = String(resTime % 60).padStart(2, '0');
@@ -1116,7 +1073,6 @@
             }, 1000);
         }
 
-        // Practice Auto-Fill Card Button
         document.getElementById('btnQuickFill').addEventListener('click', () => {
             document.getElementById('cardNumber').value = "4543 1234 5678 9012";
             document.getElementById('cardMonth').value = "05";
@@ -1125,7 +1081,6 @@
             document.getElementById('termsCheck').checked = true;
         });
 
-        // Finalize Checkout Form Submission
         document.getElementById('paymentForm').addEventListener('submit', (e) => {
             e.preventDefault();
             stopTimer();
@@ -1143,7 +1098,6 @@
             resultOverlay.classList.add('active');
         });
 
-        // Reset Simulator
         document.getElementById('btnRestart').addEventListener('click', () => {
             resultOverlay.classList.remove('active');
             stepCheckout.classList.add('hidden');
