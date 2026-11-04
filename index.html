@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bubilet - PERMA Bilet Alma Prova Simülatörü</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bubilet-green: #00c853;
+            --bubilet-dark-green: #00a844;
+            --bubilet-bg: #f5f6f8;
+            --bubilet-card-bg: #ffffff;
+            --bubilet-text: #1e293b;
+            --bubilet-muted: #64748b;
+            --seat-available: #00c853;
+            --seat-occupied: #cbd5e1;
+            --seat-other-cart: #ff9800;
+            --seat-selected: #2563eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: var(--bubilet-text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        /* App Layout Container */
+        .app-container {
+            width: 100%;
+            max-width: 430px;
+            height: 90vh;
+            max-height: 860px;
+            background: var(--bubilet-bg);
+            border-radius: 28px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 4px solid #1e293b;
+        }
+
+        /* Top Header Navigation */
+        .top-bar {
+            background: var(--bubilet-green);
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .top-bar .nav-left, .top-bar .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .top-bar i {
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .top-bar .logo {
+            font-weight: 800;
+            font-size: 22px;
+            letter-spacing: -0.5px;
+        }
+
+        /* Speed Test Live Dashboard Header */
+        .practice-dashboard {
+            background: #1e293b;
+            color: white;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #334155;
+            font-size: 13px;
+        }
+
+        .timer-display {
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: #4ade80;
+        }
+
+        .live-sold-out-alert {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #fbbf24;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main Content View Container */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* STEP 1: Event Detail View */
+        .event-detail-view {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-bottom: 20px;
+        }
+
+        .event-banner {
+            width: 100%;
+            height: 230px;
+            position: relative;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .event-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .event-info-card {
+            background: white;
+            margin: 0 12px;
+            padding: 16px;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .event-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .event-stars {
+            color: #cbd5e1;
+            font-size: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .event-stars span {
+            color: var(--bubilet-green);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .event-meta-box {
+            border-top: 1px solid #f1f5f9;
+            padding-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .meta-text {
+            font-size: 13px;
+            color: var(--bubilet-muted);
+            line-height: 1.4;
+        }
+
+        .meta-text strong {
+            color: var(--bubilet-text);
+        }
+
+        .btn-buy-trigger {
+            background: var(--bubilet-green);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-buy-trigger:active {
+            transform: scale(0.96);
+        }
+
+        .event-description-box {
+            background: white;
+            margin: 0 12px;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        /* STEP 2: Interactive Arena & Block Selection */
+        .arena-view {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #fff;
+            min-height: 100%;
+        }
+
+        .arena-header {
+            background: #0f172a;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .arena-header-info h4 {
+            font-size: 14px;
+            color: white;
+            margin-bottom: 2px;
+        }
+
+        .price-range-badge {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            width: fit-content;
+        }
+
+        .arena-map-wrapper {
+            position: relative;
+            background: #fafafa;
+            border: 1px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 16px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            overflow: hidden;
+        }
+
+        .stage-line {
+            width: 70%;
+            height: 24px;
+            border-bottom: 3px solid #64748b;
+            border-radius: 0 0 50% 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #475569;
+            margin-bottom: 10px;
+        }
+
+        /* Layout Grid for Blocks matching Bubilet Arena Image */
+        .arena-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 8px;
+        }
+
+        .side-tribunes {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .center-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .bottom-tribunes {
+            grid-column: span 3;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .block-btn {
+            border: none;
+            padding: 10px 4px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            color: white;
+            transition: all 0.15s;
+            position: relative;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+        }
+
+        .block-btn.available {
+            background-color: var(--seat-available);
+        }
+
+        .block-btn.other-cart {
+            background-color: var(--seat-other-cart);
+        }
+
+        .block-btn.occupied {
+            background-color: var(--seat-occupied);
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .block-btn.sold-out-flash {
+            animation: flash-red 0.4s ease;
+        }
+
+        @keyframes flash-red {
+            0% { background-color: #ef4444; transform: scale(1.05); }
+            100% { background-color: var(--seat-occupied); }
+        }
+
+        .block-btn .stock-count {
+            font-size: 8px;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+
+        .map-legend {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            font-size: 11px;
+            color: var(--bubilet-muted);
+            margin-top: 4px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* Modal for Seat selection inside block */
+        .seat-picker-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 50;
+            display: flex;
+            align-items: flex-end;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.25s ease;
+        }
+
+        .seat-picker-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .seat-sheet {
+            width: 100%;
+            background: white;
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transform: translateY(100%);
+            transition: transform 0.25s ease;
+        }
+
+        .seat-picker-overlay.active .seat-sheet {
+            transform: translateY(0);
+        }
+
+        .seats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 6px;
+        }
+
+        .single-seat-btn {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .single-seat-btn.taken {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+
+        .single-seat-btn.selected {
+            background: var(--bubilet-green);
+            color: white;
+            border-color: var(--bubilet-green);
+        }
+
+        /* STEP 3: Mobile Payment Form matching 3rd screenshot */
+        .checkout-view {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: white;
+            min-height: 100%;
+        }
+
+        .checkout-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .checkout-header h3 {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .reservation-timer-chip {
+            background: #fef3c7;
+            color: #b45309;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .summary-card {
+            background: var(--bubilet-bg);
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .summary-card strong {
+            color: var(--bubilet-text);
+        }
+
+        .payment-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--bubilet-muted);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input, .input-wrapper select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .input-wrapper input:focus {
+            border-color: var(--bubilet-green);
+        }
+
+        .card-brands {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 4px;
+        }
+
+        .card-brands img {
+            height: 16px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        .quick-fill-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 4px;
+        }
+
+        .price-breakdown {
+            border-top: 1px dashed #cbd5e1;
+            padding-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            color: var(--bubilet-muted);
+        }
+
+        .price-row.total {
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--bubilet-green);
+            margin-top: 4px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--bubilet-muted);
+            line-height: 1.3;
+            margin-top: 4px;
+        }
+
+        .btn-submit-order {
+            background: var(--bubilet-green);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0, 200, 83, 0.4);
+            margin-top: 8px;
+        }
+
+        /* Bottom Fixed Navigation Bar */
+        .bottom-nav {
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 10;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 10px;
+            color: var(--bubilet-muted);
+            gap: 2px;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--bubilet-green);
+            font-weight: 700;
+        }
+
+        .nav-item i {
+            font-size: 18px;
+        }
+
+        /* Score & Performance Modal */
+        .result-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.9);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            color: white;
+            text-align: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .result-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .score-card {
+            background: #1e293b;
+            border: 2px solid var(--bubilet-green);
+            padding: 24px;
+            border-radius: 20px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .score-time {
+            font-size: 36px;
+            font-weight: 900;
+            color: #4ade80;
+            font-family: monospace;
+        }
+
+        .badge-rank {
+            background: var(--bubilet-green);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            width: fit-content;
+            margin: 0 auto;
+        }
+
+        .btn-restart {
+            background: white;
+            color: #0f172a;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Top App Bar -->
+        <div class="top-bar">
+            <div class="nav-left">
+                <i class="fa-solid fa-chevron-left" id="btnBack"></i>
+                <span class="logo">bubilet</span>
+            </div>
+            <div class="nav-right">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <i class="fa-regular fa-heart"></i>
+                <i class="fa-solid fa-share-nodes"></i>
+            </div>
+        </div>
+
+        <!-- Practice Mode Timer & Live Alert Header -->
+        <div class="practice-dashboard">
+            <div>
+                <span style="opacity: 0.7; font-size: 11px;">PROVA SÜRESİ</span>
+                <div class="timer-display" id="timerDisplay">00:00.000</div>
+            </div>
+            <div class="live-sold-out-alert">
+                <i class="fa-solid fa-bolt"></i>
+                <span id="liveAlertText">Stoklar tükeniyor!</span>
+            </div>
+        </div>
+
+        <!-- Main Dynamic View Area -->
+        <div class="content-area">
+            
+            <!-- STEP 1: EVENT DETAIL PAGE (PERMA) -->
+            <div id="stepEvent" class="event-detail-view">
+                <div class="event-banner">
+                    <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80" alt="PERMA Konseri Afişi">
+                </div>
+                <div class="event-info-card">
+                    <h1 class="event-title">PERMA</h1>
+                    <div class="event-stars">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <span>Değerlendir</span>
+                    </div>
+                    <div class="event-meta-box">
+                        <div class="meta-text">
+                            <strong>28 Kasım, Cumartesi · 21:00</strong><br>
+                            Yaş Sınırsız<br>
+                            DasDas - Ataşehir / Volkswagen Arena
+                        </div>
+                        <button class="btn-buy-trigger" id="btnStartPractice">
+                            Bilet Al
+                        </button>
+                    </div>
+                </div>
+                <div class="event-description-box">
+                    <strong>PERMAVERSE turnesi başlıyor! 🚀🪐</strong><br>
+                    Yeni albümümüz PERMAVERSE'ü sizinle buluşturuyor, ardından FiPlus organizasyonuyla Türkiye turnesine çıkıyoruz!
+                </div>
+            </div>
+
+            <!-- STEP 2: ARENA & BLOCK SELECTION VIEW -->
+            <div id="stepArena" class="arena-view hidden">
+                <div class="arena-header">
+                    <div class="arena-header-info">
+                        <h4>PERMA</h4>
+                        <span style="opacity: 0.8;">28 Kasım 2026, 21:00</span>
+                    </div>
+                    <i class="fa-solid fa-circle-info"></i>
+                </div>
+
+                <div class="price-range-badge">
+                    <i class="fa-solid fa-ticket" style="color: var(--bubilet-green);"></i>
+                    900₺ - 3000₺
+                </div>
+
+                <!-- Arena Map matching screenshot 2 -->
+                <div class="arena-map-wrapper">
+                    <div class="stage-line">SAHNE</div>
+                    
+                    <div class="arena-grid">
+                        <!-- Left Side Tribunes -->
+                        <div class="side-tribunes">
+                            <button class="block-btn available" data-block="201">201 <span class="stock-count">Az Kaldı</span></button>
+                            <button class="block-btn available" data-block="202">202 <span class="stock-count">Müsait</span></button>
+                            <button class="block-btn available" data-block="203">203 <span class="stock-count">Müsait</span></button>
+                            <button class="block-btn available" data-block="204">204 <span class="stock-count">Müsait</span></button>
+                            <button class="block-btn available" data-block="205">205 <span class="stock-count">Müsait</span></button>
+                            <button class="block-btn available" data-block="206">206 <span class="stock-count">Müsait</span></button>
+                        </div>
+
+                        <!-- Center Field (Standing Areas) -->
+                        <div class="center-field">
+                            <button class="block-btn available" data-block="SAHNE ÖNÜ AYAKTA" style="height: 70px;">
+                                SAHNE ÖNÜ AYAKTA
+                                <span class="stock-count">Hızlı Tükeniyor!</span>
+                            </button>
+                            <button class="block-btn available" data-block="GENEL GİRİŞ" style="height: 90px;">
+                                GENEL GİRİŞ
+                                <span class="stock-count">Müsait</span>
+                            </button>
+                        </div>
+
+                        <!-- Right Side Tribunes -->
+                        <div class="side-tribunes">
+                            <button class="block-btn available" data-block="217">217 <span class="stock-count">Az Kaldı</span></button>
+                            <button class="block-btn available" data-block="216">216 <span class="stock-count">Müsait</span></button>
+                            <button class="block-btn available" data-block="215">215 <span class="stock-count">Müsait</span></button>
+                            <button class="block-btn available" data-block="214">214 <span class="stock-count">Müsait</span></button>
+                            <button class="block-btn available" data-block="213">213 <span class="stock-count">Müsait</span></button>
+                            <button class="block-btn available" data-block="212">212 <span class="stock-count">Müsait</span></button>
+                        </div>
+
+                        <!-- Bottom Curve Tribunes -->
+                        <div class="bottom-tribunes">
+                            <button class="block-btn available" data-block="207">207</button>
+                            <button class="block-btn available" data-block="208">208</button>
+                            <button class="block-btn available" data-block="209">209</button>
+                            <button class="block-btn available" data-block="210">210</button>
+                        </div>
+                    </div>
+
+                    <div class="map-legend">
+                        <div class="legend-item"><div class="legend-dot" style="background: var(--seat-available);"></div> Müsait</div>
+                        <div class="legend-item"><div class="legend-dot" style="background: var(--seat-occupied);"></div> Dolu</div>
+                        <div class="legend-item"><div class="legend-dot" style="background: var(--seat-other-cart);"></div> Başka Sepette</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: CHECKOUT & PAYMENT FORM VIEW -->
+            <div id="stepCheckout" class="checkout-view hidden">
+                <div class="checkout-header">
+                    <h3>Sipariş Özeti</h3>
+                    <div class="reservation-timer-chip">
+                        <i class="fa-regular fa-clock"></i>
+                        <span id="reservationCountdown">09:59</span>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <strong id="summaryBlockName">1. Kategori-Premium Tribün 209 Blok</strong>
+                    <span style="color: var(--bubilet-muted);" id="summarySeatName">Koltuk: SM - 8 (1 Adet)</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h4 font-size: 14px;>Ödeme Bilgileri</h4>
+                    <button class="quick-fill-btn" id="btnQuickFill">⚡ Prova Hızlı Doldur</button>
+                </div>
+
+                <form class="payment-form" id="paymentForm" onsubmit="event.preventDefault();">
+                    <div class="form-group">
+                        <label>Kart Numarası</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="cardNumber" placeholder="4543 **** **** 1234" maxlength="19" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ay</label>
+                            <div class="input-wrapper">
+                                <select id="cardMonth" required>
+                                    <option value="">Seçiniz</option>
+                                    <option>01</option><option>05</option><option>12</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Yıl</label>
+                            <div class="input-wrapper">
+                                <select id="cardYear" required>
+                                    <option value="">Seçiniz</option>
+                                    <option>2026</option><option>2027</option><option>2028</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>CVV</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="cardCvv" placeholder="123" maxlength="3" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="price-breakdown">
+                        <div class="price-row">
+                            <span>Bilet Fiyatı</span>
+                            <span>3000₺</span>
+                        </div>
+                        <div class="price-row">
+                            <span>Hizmet Bedeli</span>
+                            <span>63₺</span>
+                        </div>
+                        <div class="price-row total">
+                            <span>Genel Toplam</span>
+                            <span>3063₺</span>
+                        </div>
+                    </div>
+
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="termsCheck" required style="margin-top: 2px;">
+                        <span>Ön Bilgilendirme Koşullarını ve Mesafeli Satış Sözleşmesini okudum, kabul ediyorum.</span>
+                    </label>
+
+                    <button type="submit" class="btn-submit-order" id="btnCompleteOrder">
+                        Siparişi Tamamla
+                    </button>
+                </form>
+            </div>
+
+        </div>
+
+        <!-- Seat Selection Bottom Sheet Modal -->
+        <div class="seat-picker-overlay" id="seatModal">
+            <div class="seat-sheet">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 id="modalBlockTitle" style="font-size: 16px; font-weight: 800;">Blok 209 Koltuk Seçimi</h3>
+                    <i class="fa-solid fa-xmark" id="btnCloseModal" style="cursor: pointer; font-size: 20px;"></i>
+                </div>
+                <p style="font-size: 12px; color: var(--bubilet-muted);">Lütfen boş bir koltuk seçip devam edin:</p>
+                <div class="seats-grid" id="seatsGrid"></div>
+            </div>
+        </div>
+
+        <!-- Score & Performance Result View -->
+        <div class="result-overlay" id="resultOverlay">
+            <div class="score-card">
+                <i class="fa-solid fa-trophy" style="font-size: 40px; color: #f59e0b;"></i>
+                <h2>TEBRİKLER!</h2>
+                <p style="font-size: 13px; opacity: 0.8;">PERMA Konseri Biletini Başarıyla Captın!</p>
+                
+                <div>
+                    <span style="font-size: 11px; opacity: 0.6;">TOPLAM TAMAMLAMA SÜRESİ</span>
+                    <div class="score-time" id="finalTimeScore">00:00.000</div>
+                </div>
+
+                <div class="badge-rank" id="speedRankBadge">⚡ Hız Derecesi: Işık Hızında</div>
+
+                <button class="btn-restart" id="btnRestart">Tekrar Prova Yap</button>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation Bar matching screenshot -->
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <i class="fa-solid fa-house"></i>
+                <span>Etkinlikler</span>
+            </div>
+            <div class="nav-item">
+                <i class="fa-regular fa-heart"></i>
+                <span>Takip</span>
+            </div>
+            <div class="nav-item">
+                <i class="fa-solid fa-ticket"></i>
+                <span>Biletlerim</span>
+            </div>
+            <div class="nav-item">
+                <i class="fa-regular fa-user"></i>
+                <span>Hesabım</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // App State Variables
+        let currentStep = 'event';
+        let timerInterval = null;
+        let liveSoldOutInterval = null;
+        let startTime = 0;
+        let elapsedTime = 0;
+        let selectedBlock = '';
+        let selectedSeat = '';
+
+        // DOM Elements
+        const stepEvent = document.getElementById('stepEvent');
+        const stepArena = document.getElementById('stepArena');
+        const stepCheckout = document.getElementById('stepCheckout');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const seatModal = document.getElementById('seatModal');
+        const seatsGrid = document.getElementById('seatsGrid');
+        const modalBlockTitle = document.getElementById('modalBlockTitle');
+        const resultOverlay = document.getElementById('resultOverlay');
+
+        // Start Stopwatch
+        function startTimer() {
+            startTime = Date.now() - elapsedTime;
+            timerInterval = setInterval(() => {
+                elapsedTime = Date.now() - startTime;
+                const ms = String(Math.floor((elapsedTime % 1000) / 10)).padStart(2, '0');
+                const sec = String(Math.floor((elapsedTime / 1000) % 60)).padStart(2, '0');
+                const min = String(Math.floor((elapsedTime / (1000 * 60)) % 60)).padStart(2, '0');
+                timerDisplay.textContent = `${min}:${sec}.${ms}`;
+            }, 10);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function resetTimer() {
+            stopTimer();
+            elapsedTime = 0;
+            timerDisplay.textContent = "00:00.000";
+        }
+
+        // Simulating Real-time High-Demand Ticket Consumption (Live Sold-out Bot)
+        function startLiveTicketDepletion() {
+            const blocks = document.querySelectorAll('.block-btn.available');
+            liveSoldOutInterval = setInterval(() => {
+                if (blocks.length === 0) return;
+                const randomIndex = Math.floor(Math.random() * blocks.length);
+                const block = blocks[randomIndex];
+                
+                if (block && block.classList.contains('available')) {
+                    block.classList.remove('available');
+                    block.classList.add('other-cart', 'sold-out-flash');
+                    
+                    const stockSpan = block.querySelector('.stock-count');
+                    if (stockSpan) stockSpan.textContent = "Sepette!";
+                    
+                    document.getElementById('liveAlertText').textContent = `Blok ${block.dataset.block} kapıldı!`;
+                    
+                    setTimeout(() => {
+                        block.classList.remove('other-cart');
+                        block.classList.add('occupied');
+                        if (stockSpan) stockSpan.textContent = "Tükendi";
+                    }, 2000);
+                }
+            }, 1200); // Blocks get snatched every 1.2s
+        }
+
+        // Navigation Management
+        document.getElementById('btnStartPractice').addEventListener('click', () => {
+            stepEvent.classList.add('hidden');
+            stepArena.classList.remove('hidden');
+            currentStep = 'arena';
+            startTimer();
+            startLiveTicketDepletion();
+        });
+
+        // Block Selection Click Handler
+        document.querySelectorAll('.block-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const blockName = btn.dataset.block;
+                
+                if (btn.classList.contains('occupied')) {
+                    alert("Bu blok tükendi! Lütfen hızlıca başka bir yeşil blok seçin!");
+                    return;
+                }
+
+                selectedBlock = blockName;
+                modalBlockTitle.textContent = `Blok ${blockName} - Koltuk Seçimi`;
+                generateSeats();
+                seatModal.classList.add('active');
+            });
+        });
+
+        // Generate Seats Inside Modal
+        function generateSeats() {
+            seatsGrid.innerHTML = '';
+            for (let i = 1; i <= 15; i++) {
+                const isTaken = Math.random() < 0.3; // 30% random taken
+                const seatBtn = document.createElement('button');
+                seatBtn.className = `single-seat-btn ${isTaken ? 'taken' : ''}`;
+                seatBtn.textContent = `K-` + i;
+                if (!isTaken) {
+                    seatBtn.addEventListener('click', () => {
+                        document.querySelectorAll('.single-seat-btn').forEach(s => s.classList.remove('selected'));
+                        seatBtn.classList.add('selected');
+                        selectedSeat = `Koltuk K-` + i;
+                        
+                        setTimeout(() => {
+                            seatModal.classList.remove('active');
+                            goToCheckout();
+                        }, 150);
+                    });
+                }
+                seatsGrid.appendChild(seatBtn);
+            }
+        }
+
+        document.getElementById('btnCloseModal').addEventListener('click', () => {
+            seatModal.classList.remove('active');
+        });
+
+        // Transition to Payment Checkout
+        function goToCheckout() {
+            clearInterval(liveSoldOutInterval);
+            stepArena.classList.add('hidden');
+            stepCheckout.classList.remove('hidden');
+            currentStep = 'checkout';
+            
+            document.getElementById('summaryBlockName').textContent = `1. Kategori-Premium Tribün ${selectedBlock} Blok`;
+            document.getElementById('summarySeatName').textContent = `${selectedSeat} (1 Adet)`;
+            startReservationCountdown();
+        }
+
+        // Reservation 10 Minute Countdown Timer Simulation
+        function startReservationCountdown() {
+            let resTime = 594; // 9 min 54 sec like screenshot
+            setInterval(() => {
+                const m = String(Math.floor(resTime / 60)).padStart(2, '0');
+                const s = String(resTime % 60).padStart(2, '0');
+                document.getElementById('reservationCountdown').textContent = `${m}:${s}`;
+                if (resTime > 0) resTime--;
+            }, 1000);
+        }
+
+        // Practice Auto-Fill Card Button
+        document.getElementById('btnQuickFill').addEventListener('click', () => {
+            document.getElementById('cardNumber').value = "4543 1234 5678 9012";
+            document.getElementById('cardMonth').value = "05";
+            document.getElementById('cardYear').value = "2027";
+            document.getElementById('cardCvv').value = "888";
+            document.getElementById('termsCheck').checked = true;
+        });
+
+        // Finalize Checkout Form Submission
+        document.getElementById('paymentForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            stopTimer();
+
+            const finalMs = elapsedTime;
+            const secTotal = (finalMs / 1000).toFixed(2);
+            
+            document.getElementById('finalTimeScore').textContent = timerDisplay.textContent;
+            
+            let rank = "⚡ Işık Hızında Biletçi";
+            if (secTotal > 15) rank = "🐢 Biraz Yavaş Kalındı (Tükenebilirdi)";
+            else if (secTotal > 8) rank = "🔥 Çok Hızlı!";
+            
+            document.getElementById('speedRankBadge').textContent = rank;
+            resultOverlay.classList.add('active');
+        });
+
+        // Reset Simulator
+        document.getElementById('btnRestart').addEventListener('click', () => {
+            resultOverlay.classList.remove('active');
+            stepCheckout.classList.add('hidden');
+            stepArena.classList.add('hidden');
+            stepEvent.classList.remove('hidden');
+            currentStep = 'event';
+            resetTimer();
+        });
+
+        document.getElementById('btnBack').addEventListener('click', () => {
+            if (currentStep === 'checkout') {
+                stepCheckout.classList.add('hidden');
+                stepArena.classList.remove('hidden');
+                currentStep = 'arena';
+            } else if (currentStep === 'arena') {
+                stepArena.classList.add('hidden');
+                stepEvent.classList.remove('hidden');
+                currentStep = 'event';
+                resetTimer();
+                clearInterval(liveSoldOutInterval);
+            }
+        });
+    </script>
+</body>
+</html>
